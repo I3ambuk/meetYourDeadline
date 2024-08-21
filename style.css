@@ -48,6 +48,11 @@ input[type="checkbox"] {
     transform: scale(1.2);
 }
 
+.actions-cell {
+    display: flex;
+    gap: 10px;
+}
+
 button {
     padding: 10px 15px;
     border: none;
@@ -68,6 +73,15 @@ button:hover {
 .remove-button:hover {
     background-color: #c82333;
 }
+
+.edit-button {
+    background-color: #a7a7a7;
+}
+
+.edit-button:hover {
+    background-color: #6f6f6f;
+}
+
 .add-button {
     background-color: #35dc38;
 }

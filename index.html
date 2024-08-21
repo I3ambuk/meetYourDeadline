@@ -3,22 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Game</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Make Your Deadline</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Word Game</h1>
-        <form id="playerForm">
-            <label for="numPlayers">Number of Players:</label>
-            <input type="number" id="numPlayers" name="numPlayers" min="2" required>
-            <button type="submit">Start Game</button>
-        </form>
-        <div id="gameArea" style="display: none;">
-            <h2>Player Words</h2>
-            <div id="buttonsContainer"></div>
-        </div>
-    </div>
+    <h1>Make Your Deadline</h1>
+    <!-- Placeholder for the Table for the current Topic, created on startup based on localStorage -->
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Finished</th>
+                <th>Pages</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+        <tr>
+            <td><input type="text" id="new_entryname" placeholder="Entryname"></td>
+            <td><input type="checkbox" id="new_finished" placeholder="false" checked="false"></td>
+            <td><input type="number" id="new_pages" placeholder="0"></td>
+            <td><button onclick="addTopicEntry()">Add</button></td>
+        </tr>
+    </table>
+    <br><br>
+    <button onclick="exportTopic()">Export Topic</button>
+    <br><br>
+    <label for="fileInput">Import Topic from Json:</label>
+    <br><br>
+    <input type="file" id="fileInput" onchange=importTopic(event)>
+    
     <script src="script.js"></script>
 </body>
 </html>
+

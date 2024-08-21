@@ -4,133 +4,104 @@
 // TODO: Calculate stuff -> daily Pages
 // TODO: (Add planer what to do today, tomorrow etc.)
 
-// Load Topic Table on Startup
-loadTable()
-function loadTable() {
-    const topic = localStorage.getItem('topic');
-    const topic_parsed = topic ? JSON.parse(topic) : []
-    console.log(topic)
+document.addEventListener("DOMContentLoaded", () => {
+    initializeTable();
+    document.getElementById('addEntryButton').addEventListener('click', addTopicEntry);
+    document.getElementById('exportButton').addEventListener('click', exportTopic);
+    document.getElementById('fileInput').addEventListener('change', importTopic);
+    document.getElementById('fileButton').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+    document.getElementById('fileInput').addEventListener('change', importTopic);
+});
 
-    // Create the table
-    if (topic_parsed.length > 0) {
-        createTable(topic_parsed);
-    }
-
-    function createTable(topic) {
-        // Create table body
-        const tbody = document.getElementById("table-body")
-        topic.forEach((row, rowIndex) => {
-            const tr = document.createElement('tr');
-
-            // NAME
-            const name = row['name']
-            const td_name = document.createElement('td');
-            td_name.contentEditable = "true"
-            const text = document.createTextNode(name)
-            text.addEventListener('change', function() {
-                topic[rowIndex]['name'] = text
-                saveTopic(topic);
-            })
-            td_name.appendChild(text);
-            tr.appendChild(td_name);
-
-            // Finished
-            finished = row['finished']
-            const td_finished = document.createElement('td');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = finished; // Assuming true/false in data
-            checkbox.addEventListener('change', function() {
-                topic[rowIndex]['finished'] = checkbox;
-                saveTopic(topic);
-            });
-            td_finished.appendChild(checkbox);
-            tr.appendChild(td_finished);
-
-            //Pages
-            pages = row['pages']
-            const td_pages = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.value = pages || "NaN"; // Default to empty string if undefined
-            input.addEventListener('change', function() {
-                topic[rowIndex]['pages'] = parseInt(input.value) || NaN; // Convert to integer
-                saveTopic(topic);
-            });
-            td_pages.appendChild(input);
-            tr.appendChild(td_pages);
-
-            tbody.appendChild(tr);
-        });
-    }
-
+function initializeTable() {
+    const topics = getStoredTopics();
+    const tableBody = document.getElementById('table-body');
+    topics.forEach((topic, index) => addRowToTable(topic, tableBody, index));
 }
 
-function deleteTable() {
-    const tablebody = document.getElementById('table-body');
-    tablebody.innerHTML = "";
-} 
-function refreshTable() {
-    deleteTable();
-    loadTable();
+function getStoredTopics() {
+    return JSON.parse(localStorage.getItem('topics')) || [];
 }
 
-// Save settings to local storage
 function addTopicEntry() {
-    new_entryname = document.getElementById("new_entryname").value
-    new_finished = document.getElementById("new_finished").checked
-    new_pages = document.getElementById("new_pages").value
-    if (new_entryname != "" && new_pages != "") {
-        entry = {
-            name: new_entryname,
-            finished: new_finished,
-            pages: new_pages
-        };
-        const topic = JSON.parse(localStorage.getItem('topic')) || [];
-        topic.push(entry)
-        localStorage.setItem('topic', JSON.stringify(topic))
-        refreshTable()
+    const name = document.getElementById('newEntryName').value.trim();
+    const finished = document.getElementById('newFinished').checked;
+    const pages = parseInt(document.getElementById('newPages').value, 10) || 0;
+
+    if (!name) {
+        alert("Entry name is required!");
+        return;
     }
+
+    const topic = { name, finished, pages };
+    const topics = getStoredTopics();
+    topics.push(topic);
+    saveTopics(topics)
+
+    addRowToTable(topic, document.getElementById('table-body'), topics.length - 1);
+    clearForm();
 }
 
-function saveTopic(topic=[
-{ name: 'Kapitel 1', finished: true, pages: 10 },
-{ name: 'Kapitel 2', finished: false, pages: 5 },
-{ name: 'Kapitel 3', finished: false, pages: 8 }]) {
+function addRowToTable(topic, tableBody, index) {
+    const row = document.createElement('tr');
 
-localStorage.setItem('topic', JSON.stringify(topic));
+    row.innerHTML = `
+        <td>${topic.name}</td>
+        <td><input type="checkbox" ${topic.finished ? 'checked' : ''} onchange="toggleFinished(${index})"></td>
+        <td>${topic.pages}</td>
+        <td><button class="remove-button" onclick="removeEntry(${index})">-</button></td>
+    `;
+
+    tableBody.appendChild(row);
+}
+function toggleFinished(index) {
+    const topics = getStoredTopics();
+    topics[index].finished = !topics[index].finished;
+    saveTopics(topics);
+}
+function saveTopics(topics) {
+    localStorage.setItem('topics', JSON.stringify(topics));
+}
+function removeEntry(index) {
+    const topics = getStoredTopics();
+    topics.splice(index, 1);
+    saveTopics(topics);
+    refreshTable();
+}
+function refreshTable() {
+    document.getElementById('table-body').innerHTML = '';
+    initializeTable();
 }
 
-// Export settings as JSON
+function clearForm() {
+    document.getElementById('newEntryName').value = '';
+    document.getElementById('newFinished').checked = false;
+    document.getElementById('newPages').value = '';
+}
+
 function exportTopic() {
-    const topic = localStorage.getItem('topic');
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topic));
+    const topics = getStoredTopics();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topics));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "topic.json");
+    downloadAnchorNode.setAttribute("download", "topics.json");
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
 }
 
-// Import settings from JSON file
 function importTopic(event) {
     const file = event.target.files[0];
+    if (!file) return;
+
     const reader = new FileReader();
-    reader.onload = function(event) {
-        const topic = JSON.parse(event.target.result);
-        if (checkTopicFile()) {
-            localStorage.setItem('topic', topic);
-            refreshTable();
-            alert('Topic imported');
-        } else {
-            alert('Invalid settings file');
-        }
+    reader.onload = function(e) {
+        const importedTopics = JSON.parse(e.target.result);
+        saveTopics(importedTopics)
+        document.getElementById('table-body').innerHTML = '';
+        initializeTable();
     };
     reader.readAsText(file);
-
-    function checkTopicFile() {
-        // TODO: Implement
-        return true
-    }
 }

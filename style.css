@@ -1,36 +1,59 @@
 body {
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    background-color: #f4f4f4;
+    color: #333;
     margin: 0;
-    background-color: #f0f0f0;
+    padding: 20px;
 }
 
 .container {
-    text-align: center;
-    border: 2px solid #000;
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
     padding: 20px;
-    border-radius: 10px;
-    background-color: #fff;
-    width: 90%;
-    max-width: 400px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-label, input, button {
-    display: block;
-    margin: 10px auto;
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+thead tr {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
 }
 
 button {
-    padding: 10px 20px;
+    padding: 10px 15px;
     border: none;
-    border-radius: 5px;
     background-color: #007BFF;
-    color: white;
-    font-size: 16px;
+    color: #fff;
+    border-radius: 5px;
     cursor: pointer;
 }
 
@@ -38,18 +61,32 @@ button:hover {
     background-color: #0056b3;
 }
 
-#gameArea {
+.remove-button {
+    background-color: #dc3545;
+}
+
+.remove-button:hover {
+    background-color: #c82333;
+}
+.add-button {
+    background-color: #35dc38;
+}
+
+.add-button:hover {
+    background-color: #2ec823;
+}
+
+.buttons,
+.import-section {
+    text-align: center;
+}
+
+.import-section {
     margin-top: 20px;
+    text-align: center;
 }
 
-.player {
-    margin: 10px 0;
+.hidden-file-input {
+    display: none;
 }
 
-.wordDisplay {
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-}

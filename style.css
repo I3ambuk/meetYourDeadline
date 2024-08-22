@@ -47,6 +47,9 @@ input[type="number"] {
 input[type="checkbox"] {
     transform: scale(1.2);
 }
+input[type="number"].small-input {
+    width: 30%;
+}
 
 .actions-cell {
     display: flex;
@@ -72,6 +75,13 @@ button:hover {
 
 .remove-button:hover {
     background-color: #c82333;
+}
+.abort-button {
+    background-color: #d85d6a;
+}
+
+.abort-button:hover {
+    background-color: #a53e48;
 }
 
 .edit-button {

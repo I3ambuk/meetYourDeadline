@@ -1,4 +1,3 @@
-//TODO: do progress calculation
 //TODO: Import Days into html textform when importing
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -121,7 +120,7 @@ function handleFinishedClick(cb, index) {
 
 function handlePagesDoneChange(field, index) {
     const entries = getStoredEntries();
-    entries[index].pages_done = field.value
+    entries[index].pages_done = parseInt(field.value);
     saveEntries(entries);
     
     const row = field.closest('tr')
@@ -173,7 +172,7 @@ function toggleEdit(index, button) {
             nameCell.setAttribute('contenteditable', 'false');
             button.textContent = 'Edit';
             nameCell.textContent = cachedName;
-            pagesCell.innerHTML = `<input type="number" value="${entries[index].pages_done}" min="0" max="${entries[index].pages}" class="pages-done-input small-input"  onchange="handlePagesDoneChange(this,${index})"> / ${cachedPages}`;
+            pagesCell.innerHTML = `<input type="number" value="${entries[index].pages_done}" min=0 max="${entries[index].pages}" class="pages-done-input small-input"  onchange="handlePagesDoneChange(this,${index})"> / ${cachedPages}`;
             abortButton.remove();
         };
         actionCell.appendChild(abortButton);
@@ -214,9 +213,25 @@ function importTopic(event) {
 
 // Progress calculation
 function onSaveTopic(topic) {
-    //TODO: Filter out days before current Day
-    ppd_row = document.getElementById('deadline');
-    ppd_row.innerHTML = `${topic.days.length}`
+    entries = topic.entries;
+    pages_total = 0;
+    pages_done_total = 0; 
+    entries.forEach(entry => {
+        pages_total += entry.pages;
+        pages_done_total += entry.pages_done;
+    });
+    days_left = topic.days.length //TODO: Filter out days before current Day (needed in calc pages per day as well)
+    
+    // Deadline
+    deadline_row = document.getElementById('deadline');
+    deadline_row.innerHTML = `${days_left}`;
+    //Pages Done Total
+    deadline_row = document.getElementById('pages_done_total');
+    deadline_row.innerHTML = `${pages_done_total} / ${pages_total}`;
+    // Pages_per_day
+    ppd_row = document.getElementById('ppd');
+    ppd_row.innerHTML = `${days_left != 0? (pages_total - pages_done_total) / days_left : -1}`
+
 }
 
 function handleDateSelectorChange() {
